@@ -148,7 +148,7 @@ function init(d){D=d;
  // Index
  d.vthemes.forEach(t=>{IDX.push({k:"thema",key:t.key,title:t.title,text:t.kern,href:"#vt-"+t.key});t.quotes.forEach(q=>IDX.push({k:"zitat",key:t.key,title:t.title,text:q.t,href:TT(q.id),ext:1,date:q.date}))});
  d.songs.forEach(s=>IDX.push({k:"song",title:s.title,text:s.kern+" "+s.lines.join(" ")+" "+s.themes.join(" "),href:"#song-"+slug(s.title),stheme:s.themes}));
- d.tom.forEach(t=>IDX.push({k:"verbunden",title:t.name,text:t.overlap+" "+t.heim+" "+t.quotes.map(q=>q[0]).join(" "),href:"#tc-"+t.key}));
+ d.mine.forEach(t=>IDX.push({k:"verbunden",title:t.name,text:t.overlap+" "+t.heim+" "+t.quotes.map(q=>q[0]).join(" "),href:"#tc-"+t.key}));
  const v2t={};d.vthemes.forEach(t=>t.videos.forEach(v=>(v2t[v.id]=v2t[v.id]||[]).push(t.key)));
  d.docs.forEach(x=>IDX.push({k:x.k==="t"?"transkript":"songtext",title:x.title,text:x.text,href:x.k==="t"?TT(x.id):"#song-"+slug(x.title),ext:x.k==="t",date:x.date,keys:x.k==="t"?(v2t[x.id]||[]):[]}));
  IDX.forEach(x=>x.n=norm(x.title+" "+x.text));
@@ -183,14 +183,14 @@ function openLB(f,c){const lb=$("#lb"),im=lb.querySelector("img");im.classList.r
 const closeLB=()=>{$("#lb").classList.remove("on");document.body.style.overflow=""};$("#lb .x").onclick=closeLB;document.addEventListener("keydown",e=>{if(e.key==="Escape")closeLB()});
 $("#lb img").onclick=e=>{e.target.classList.toggle("zoom");$("#lb").classList.toggle("z",e.target.classList.contains("zoom"))};
 function tomCards(){const d=D;
- $("#tc").innerHTML=d.tom.map(t=>`<details class=card id="tc-${t.key}"><summary><span class=tog>＋</span><h3>${t.icon} ${E(t.name)}</h3><div class=meta>${t.vthemes.length} Video-Themen · ${t.quotes.length} Zitate · ${t.songs.length} Songs</div></summary>
+ $("#tc").innerHTML=d.mine.map(t=>`<details class=card id="tc-${t.key}"><summary><span class=tog>＋</span><h3>${t.icon} ${E(t.name)}</h3><div class=meta>${t.vthemes.length} Video-Themen · ${t.quotes.length} Zitate · ${t.songs.length} Songs</div></summary>
  <p style="margin-top:10px">${E(t.overlap)}</p>
  ${t.quotes.map(q=>`<blockquote>„${E(q[0])}“<small>Papi King · <a href="${TT(q[1])}" target=_blank rel=noopener>Video öffnen ↗</a></small></blockquote>`).join("")}
  ${t.songs.length?`<div class=meta style="margin-top:8px">Songs: ${t.songs.map(s=>`<b style="color:var(--gold2)">${E(s[0])}</b> ${E(s[1])}`).join(" · ")}</div>`:""}
  <div class=meta style="margin-top:6px">Video-Themen: ${t.vthemes.map(k=>{const v=d.vthemes.find(x=>x.key===k);return `<a href="#vt-${k}">${E(v.title)}</a>`}).join(" · ")}</div>
  <div class=heim><b>Heim / Vishnu-Text:</b> ${E(t.heim)}</div></details>`).join("")}
 function graph(){const d=D,svg=$("#graph"),W=1000;
- const L=d.tom, R=[...d.vthemes.map(v=>({id:"v:"+v.key,label:v.title,c:"#d4af37"}))];
+ const L=d.mine, R=[...d.vthemes.map(v=>({id:"v:"+v.key,label:v.title,c:"#d4af37"}))];
  const songSet=[];L.forEach(t=>t.songs.forEach(s=>{if(!songSet.includes(s[0]))songSet.push(s[0])}));
  songSet.forEach(s=>R.push({id:"s:"+s,label:"♪ "+s.replace(/ \/ .*/,""),c:"#ff7eb6"}));
  const RH=62,H=Math.max(R.length*RH+60,L.length*120);const ry=j=>40+j*RH+RH/2,ly=i=>40+(i+.5)*(H-80)/L.length;
