@@ -118,6 +118,7 @@ footer{color:var(--mut);font-size:12.5px;padding:26px 16px;text-align:center;lin
     <div class="hint">Tippe links auf eines deiner Themen, dann leuchten die Verbindungen auf und die passende Karte öffnet sich.</div>
     <div id="tc"></div></section>
   <section id="vishnu"><h2>Vishnu &amp; Heim – einfach erklärt</h2><div class="lead" id="vi-intro"></div><div id="vi"><div class="empty">Lade Inhalte …</div></div></section>
+  <section id="vposts"><h2>📲 Vishnu auf TikTok</h2><div class="lead">Vishnus eigene Posts. Das ist nicht Papi King, sondern eine verwandte Quelle zu Heim und Vishnu. Neutral zusammengefasst, ohne Bewertung.</div><div id="vp"></div></section>
   <section id="bilder"><h2>Bilder</h2><div class="lead"><span id="imgn">17</span> Visualisierungen. Zum Vergrößern antippen, im Großbild noch einmal tippen zum Zoomen.</div><div class="grid" id="gal"></div></section>
   <section id="buecher"><h2>Bücher: Butterfly Effekt &amp; Das System</h2>
     <div class="card"><h3>📖 Kommt bald</h3><p style="margin-top:8px">Fotos von den Buchseiten kommen später dazu. Dann wird hier dokumentiert, was in „Butterfly Effekt – Die Verbindung“ und „Das System – Der Mechanismus“ steht.</p>
@@ -160,7 +161,7 @@ function init(d){D=d;
  $("#gal").innerHTML=d.imgs.map(i=>`<figure tabindex=0 role=button data-f="${i.f}" data-c="${E(i.c)}"><img loading=lazy src="img/${i.f}_t.webp" alt="${E(i.c)}"><figcaption>${E(i.c)}</figcaption></figure>`).join("");
  $("#gal").onclick=e=>{const f=e.target.closest("figure");if(f)openLB(f.dataset.f,f.dataset.c)};
  // Tom-Themen
- tomCards(); graph(); vishnuSec();
+ tomCards(); graph(); vishnuSec(); vpostsSec();
  // Index
  d.vthemes.forEach(t=>{IDX.push({k:"thema",key:t.key,title:t.title,text:t.kern,href:"#vt-"+t.key});t.quotes.forEach(q=>IDX.push({k:"zitat",key:t.key,title:t.title,text:q.t,href:TT(q.id),ext:1,date:q.date}))});
  d.songs.forEach(s=>IDX.push({k:"song",title:s.title,text:s.kern+" "+s.lines.join(" ")+" "+s.themes.join(" "),href:"#song-"+slug(s.title),stheme:s.themes}));
@@ -171,6 +172,7 @@ function init(d){D=d;
  IDX.push({k:"vishnu",title:"6.5 Integration",text:V.integ.lead+" "+V.integ.why+" "+V.integ.parts.map(p=>p[0]+" "+p[1]).join(" ")+" "+V.integ.how.join(" ")+" "+V.integ.ana,href:"#vi-integration"});
  V.gloss.forEach(x=>IDX.push({k:"vishnu",title:"Glossar: "+x[0],text:x[1],href:"#vi-glossar"}));
  V.links.forEach(x=>IDX.push({k:"vishnu",title:"Vishnu ↔ Papi King: "+x[1],text:x[2]+" "+x[3],href:"#vl-"+x[0]}));
+ (d.vposts||[]).forEach(p=>IDX.push({k:"vishnu",title:"Vishnu-Post: "+p.title,text:p.summary+" "+p.core.join(" ")+" "+Object.values(p.mine).join(" ")+" "+p.caption+" "+p.text,href:"#vp-"+p.id,date:p.date,keys:p.vthemes}));
  const v2t={};d.vthemes.forEach(t=>t.videos.forEach(v=>(v2t[v.id]=v2t[v.id]||[]).push(t.key)));
  d.docs.forEach(x=>IDX.push({k:x.k==="t"?"transkript":"songtext",title:x.title,text:x.text,href:x.k==="t"?TT(x.id):"#song-"+slug(x.title),ext:x.k==="t",date:x.date,keys:x.k==="t"?(v2t[x.id]||[]):[]}));
  IDX.forEach(x=>x.n=norm(x.title+" "+x.text));
@@ -210,7 +212,16 @@ function tomCards(){const d=D;
  ${t.quotes.map(q=>`<blockquote>„${E(q[0])}“<small>Papi King · <a href="${TT(q[1])}" target=_blank rel=noopener>Video öffnen ↗</a></small></blockquote>`).join("")}
  ${t.songs.length?`<div class=meta style="margin-top:8px">Songs: ${t.songs.map(s=>`<b style="color:var(--gold2)">${E(s[0])}</b> ${E(s[1])}`).join(" · ")}</div>`:""}
  <div class=meta style="margin-top:6px">Video-Themen: ${t.vthemes.map(k=>{const v=d.vthemes.find(x=>x.key===k);return `<a href="#vt-${k}">${E(v.title)}</a>`}).join(" · ")}</div>
- <div class=heim><b>Heim / Vishnu-Text:</b> ${E(t.heim)} <a href="#vishnu">Einfach erklärt ↓</a></div></details>`).join("")}
+ <div class=heim><b>Heim / Vishnu-Text:</b> ${E(t.heim)} <a href="#vishnu">Einfach erklärt ↓</a></div>${(d.vposts||[]).filter(p=>p.mine[t.key]).map(p=>`<div class=heim><b>📲 Vishnu-Post (${fd(p.date)}):</b> ${E(p.mine[t.key])} <a href="#vp-${p.id}">Zum Post ↓</a></div>`).join("")}</details>`).join("")}
+function vpostsSec(){const d=D,P=d.vposts||[];
+ $("#vp").innerHTML=P.map(p=>`<details class=card id="vp-${p.id}"><summary><span class=tog>＋</span><h3 style="font-size:17px">📲 ${E(p.title)}</h3><div class=meta>@${E(p.handle)} · ${E(p.kind)} · ${fd(p.date)} · ${p.views} Aufrufe · ${E(p.caption)}</div></summary>
+ <figure tabindex=0 role=button data-f="${p.img}" data-c="${E(p.title)}" style="margin:10px 0 0;cursor:pointer"><img loading=lazy src="img/${p.img}_t.webp" alt="${E(p.title)}" style="width:100%;border-radius:12px"><figcaption class=meta>Bild 1 des Posts (antippen zum Vergrößern)</figcaption></figure>
+ <p style="margin-top:10px">${E(p.summary)}</p>${p.core.map(c=>`<blockquote>${E(c)}</blockquote>`).join("")}
+ <div class=meta style="margin-top:8px">Berührt diese Papi-King-Themen: ${p.vthemes.map(k=>{const v=d.vthemes.find(x=>x.key===k);return `<a href="#vt-${k}">${E(v.title)}</a>`}).join(" · ")}</div>
+ <div class=meta style="margin-top:6px">Verbunden mit deinen Themen: ${Object.keys(p.mine).map(k=>{const t=d.mine.find(x=>x.key===k);return `<a href="#tc-${k}">${t.icon} ${E(t.name)}</a>`}).join(" · ")}</div>
+ <details style="margin-top:10px"><summary class=meta style="cursor:pointer">Ganzer Bildtext (abgeschrieben)</summary><p style="white-space:pre-wrap;font-size:13.5px;margin-top:6px">${E(p.text)}</p></details>
+ <a class=btn href="${p.url}" target=_blank rel=noopener>Post auf TikTok öffnen ↗</a> <a class=btn href="#vishnu">🌀 Vishnu &amp; Heim erklärt</a></details>`).join("");
+ $("#vp").querySelectorAll("figure").forEach(f=>{f.onclick=()=>openLB(f.dataset.f,f.dataset.c);f.onkeydown=e=>{if(e.key==="Enter")openLB(f.dataset.f,f.dataset.c)}})}
 function vishnuSec(){const V=D.vishnu;$("#vi-intro").textContent=V.intro;
  const pl=(h,l)=>`<a class=pill href="${h}" ${h.startsWith("http")?"target=_blank rel=noopener":""}>${E(l)}</a>`;
  let h=`<h3 class=vi-sub id="vi-integration">⭐ Herzstück: 6.5 Integration</h3>
